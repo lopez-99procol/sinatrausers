@@ -7,8 +7,3 @@ gem 'typhoeus'
 gem 'sqlite3'
 gem 'rake'
 
-group :development do
-gem 'rack-test'
-gem 'rspec'
-end
-
