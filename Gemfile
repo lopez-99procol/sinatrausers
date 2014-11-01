@@ -6,4 +6,5 @@ gem 'json'
 gem 'typhoeus'
 gem 'sqlite3'
 gem 'rake'
+gem 'activemodel', '4.1.0'
 

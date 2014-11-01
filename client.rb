@@ -29,6 +29,19 @@ class Users
     end
     response
   end
+  
+  def self.find_by_email(email)
+    request = "#{base_uri}/api/v1/users/name/#{email}"
+    response = Typhoeus::Request.get(request)
+    if response.code == 200
+      JSON.parse(response.body)["user"]
+    elsif response.code == 404
+      nil
+    else
+      raise response.body
+    end
+    response
+  end
 
   def self.create attributes
     response = Typhoeus::Request.post("#{base_uri}/api/v1/users", :body => attributes.to_json )
