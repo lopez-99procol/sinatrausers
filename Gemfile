@@ -7,6 +7,8 @@ gem 'typhoeus'
 gem 'sqlite3'
 gem 'rake'
 
-gem 'rack-test', group: :test
-gem 'rspec', group: :test
+group :development do
+gem 'rack-test'
+gem 'rspec'
+end
 
