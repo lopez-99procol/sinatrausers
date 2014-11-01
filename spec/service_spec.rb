@@ -28,7 +28,9 @@ describe "user-service" do
     
    # 9
    it "should allow accessing known user with email" do
-     get '/api/v1/users/email/99centprocol-lopez@gmail.com'
+     email= "99centprocol-lopez@gmail.com"
+     request= "/api/v1/users/email/" + email
+     get request
      expect(last_response.status).to eq(200)
    end
    

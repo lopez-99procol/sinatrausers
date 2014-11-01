@@ -1,7 +1,7 @@
 # spec/spec_helper.rb
 ENV['SINATRA_ENV'] = 'test'
 
-require File.dirname(__FILE__) + '/../app/service'
+require File.dirname(__FILE__) + '/../service'
 require 'rspec'
 require 'rack/test'
 

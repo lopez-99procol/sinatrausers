@@ -4,5 +4,9 @@ gem 'sinatra'
 gem "sinatra-activerecord"
 gem 'json'
 gem 'typhoeus'
-gem 'rspec'
 gem 'sqlite3'
+gem 'rake'
+
+gem 'rack-test', group: :test
+gem 'rspec', group: :test
+

@@ -11,39 +11,6 @@ set :database_file, "config/database.yml"
 log = Logger.new(STDOUT)
 log.level = Logger::DEBUG 
 
-# setting up our environment
-env_index = ARGV.index("-e")
-env_arg = ARGV[env_index + 1] if env_index
-env = ENV['SINATRA_ENV'] || ENV['RAILS_ENV']
-log.debug "env: #{env}"
-
-# connecting to the database
-use ActiveRecord::ConnectionAdapters::ConnectionManagement # close connection to the DDBB properly...https://github.com/puma/puma/issues/59
-databases = YAML.load_file("config/database.yml")
-ActiveRecord::Base.establish_connection(databases[env])
-log.debug "#{databases[env]} database connection established..."
-
-# creating fixture data (only in test mode)
-if env == 'test'
-  #User.destroy_all
-  User.create(
-   :id => 1,
-   :name => "lopez", 
-   :email => "99centprocol-lopez@gmail.com", 
-   :password => "99c3ntpr0c01",
-   :bio => "scrum master")
-   
-  User.create(
-   :id => 2,
-   :name => "frido",
-   :email => "99centprocol-frido@gmail.com",
-   :password => "99c3ntpr0c01",
-   :bio => "product owner")
-   
-  log.debug "fixture data created in test database..."
-end
-
-
 # HTTP entry points
 # get a user by id
 get '/api/v1/users/:id' do
@@ -63,6 +30,20 @@ end
 get '/api/v1/users/name/:name' do
   begin
     user = User.find_by_name(params[:name])
+    if user
+      user.to_json
+    else
+      error 404, {:error => "user not found"}.to_json
+    end
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
+# get a user by email
+get '/api/v1/users/email/:email' do
+  begin
+    user = User.find_by_email(params[:email])
     if user
       user.to_json
     else

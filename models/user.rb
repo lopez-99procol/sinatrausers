@@ -1,4 +1,5 @@
 require 'digest'
+require 'sinatra/activerecord'
 
 class User < ActiveRecord::Base
   attr_accessor :password
@@ -13,14 +14,14 @@ class User < ActiveRecord::Base
   # Set an own primary_key for testing needs
   self.primary_key = :id
   
-  before_save :encrypt_password
+  before_save :encrypt_password 
   
   def to_json
     super(:except => [:password, :salt])
   end
   
   def has_password?(submitted_password)
-    encrypted_password = encrypt(submitted_password)
+    encrypted_password == encrypt(submitted_password)
   end
   
   def self.authenticate(email, password)
