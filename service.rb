@@ -1,9 +1,11 @@
 require 'rubygems'
-require 'active_record'
 require 'sinatra'
 require_relative 'models/user.rb'
 require 'yaml'
 require 'logger'
+require "sinatra/activerecord"
+
+set :database_file, "config/database.yml"
 
 # setting up a logger. levels -> DEBUG < INFO < WARN < ERROR < FATAL < UNKNOWN
 log = Logger.new(STDOUT)
