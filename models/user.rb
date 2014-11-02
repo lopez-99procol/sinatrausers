@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
   before_save :encrypt_password 
   
   def to_json
-    super(:except => [:password, :salt])
+    super(:except => [:password])
   end
   
   def has_password?(submitted_password)
