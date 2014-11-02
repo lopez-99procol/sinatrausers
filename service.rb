@@ -5,7 +5,17 @@ require 'yaml'
 require 'logger'
 require "sinatra/activerecord"
 
-set :database_file, "config/database.yml"
+# set :database_file, "config/database.yml"
+
+env = ENV["RAILS_ENV"]
+case env
+when "test"
+  set :database, {adapter: "sqlite3", database: "db/test.sqlite3"}
+when "production"
+  set :database, {adapter: "sqlite3", database: "#{ENV[OPENSHIFT_DATA_DIR]}/production.sqlite3"}
+else
+  set :database, {adapter: "sqlite3", database: "db/development.sqlite3"}
+end
 
 # setting up a logger. levels -> DEBUG < INFO < WARN < ERROR < FATAL < UNKNOWN
 log = Logger.new(STDOUT)
