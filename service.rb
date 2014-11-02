@@ -12,7 +12,7 @@ case env
 when "test"
   set :database, {adapter: "sqlite3", database: "db/test.sqlite3"}
 when "production"
-  set :database, {adapter: "sqlite3", database: "#{ENV[OPENSHIFT_DATA_DIR]}/production.sqlite3"}
+  set :database, {adapter: "sqlite3", database: "#{ENV['OPENSHIFT_DATA_DIR']}/production.sqlite3"}
 else
   set :database, {adapter: "sqlite3", database: "db/development.sqlite3"}
 end
