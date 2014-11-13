@@ -146,12 +146,15 @@ delete '/api/v1/users/:id' do
 end
 
 # verify a user name and password
-post '/api/v1/users/name/:name/sessions' do
+post '/api/v1/users/:email/sessions' do
   begin 
     attributes = JSON.parse(request.body.read)
-    user = User.find_by_name_and_password(
-      params[:name], attributes["password"])
-    if user
+    email =  attributes["email"]
+    password =  attributes["password"]
+    puts "#{email}/sessions => attributes[#{attributes}]"
+    user = User.authenticate(email, password)
+    puts "#{email}/sessions => user[#{user.to_json}]"
+    if !user.nil?
       user.to_json
     else
       error 400, {:error => "invalid login credentials"}.to_json
