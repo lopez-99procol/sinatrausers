@@ -4,12 +4,17 @@ require_relative '../spec_helper'
 describe User do
   before(:each) do
     @attr = {
-    :id => "3",
-    :name => "felix",
+    :name => "Warnke",
+    :firstname => "Felix",
     :email => "99centprocol_felix@gmail.com",
     :password => "99C3ntPr0C01",
     :password_confirmation => "99C3ntPr0C01"
     }
+    
+    @nav = {
+        :label => "projects",
+        :link => "http://http://sinatraprojects-procol.rhcloud.com/",
+      }
   end
   
   describe "attribute validation" do
@@ -35,8 +40,15 @@ describe User do
   
   # Ensure password encryption is working
   describe "password encryption" do
-    before(:each) do
-      @user = User.create!(@attr)
+    before do
+      user = User.find_by_email(@attr[:email])
+      if !@user.nil?
+        @user = user
+      else
+        @user = User.create(@attr)
+        @user.save
+       # @navigation = @user.navigation.create(@nav)
+      end
     end
     
     it "should have an encrypted password attribute" do
@@ -44,7 +56,7 @@ describe User do
     end
     
     before do
-      user_to_destroy = User.find(@attr[:id])
+      user_to_destroy = User.find_by_email(@attr[:email])
       user_to_destroy.destroy
     end
     
@@ -66,6 +78,13 @@ describe User do
     
     it "should return the user on email/password match" do
       expect(User.authenticate(@attr[:email], @attr[:password])).to eq(@user)
+    end
+  end
+  
+  describe "navigation" do
+    it "should create a user with navigation" do
+      user = User.find_by_email("99centprocol_lopez@gmail.com")
+      expect(user.navigation).not_to be_nil
     end
   end
 end

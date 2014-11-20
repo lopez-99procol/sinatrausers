@@ -1,9 +1,12 @@
 require 'rubygems'
 require 'sinatra'
 require_relative 'models/user.rb'
+require_relative 'models/navigation.rb'
+require_relative 'models/userprofile.rb'
 require 'yaml'
 require 'logger'
-require "sinatra/activerecord"
+require 'sinatra/activerecord'
+require 'yajl'
 
 # set :database_file, "config/database.yml"
 
@@ -64,15 +67,48 @@ get '/api/v1/users/email/:email' do
   end
 end
 
+# get a userprofile by user_id
+get '/api/v1/users/:id/userprofile' do
+  begin
+    userprofile = Userprofile.find_by_user_id(params[:id])
+    if userprofile
+      userprofile.to_json
+    else
+      error 404, {:error => "userprofile not found"}.to_json
+    end
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
+# get the navigation for a user
+get '/api/v1/users/:navid/navigation' do
+  begin
+    navigation = Navigation.find(params[:navid])
+    if navigation
+      navigation.to_json
+    else
+      error 404, {:error => "userprofile not found"}.to_json
+    end
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
 # create (post) a new user
 post '/api/v1/users' do
   begin
-    user = User.create(JSON.parse(request.body.read))
-    puts "request = #{request.body.read}"
-    if user.valid?
+    puts "request = #{request.body}"
+    attributes = request.body.read
+    puts "attributes[#{attributes}]"
+    jsondata = Yajl::Parser.parse(attributes)
+    puts "json[#{jsondata}]"
+    user = User.create(jsondata) if !jsondata.nil? 
+    puts "user[#{user}]"
+    if !user.nil? && user.valid?
       user.to_json
     else
-      error 400, user.errors.to_json
+      error 400, "user (jsondata) is(are) nil".to_json
     end
   rescue => e
     error 400, e.message.to_json
@@ -148,9 +184,12 @@ end
 # verify a user name and password
 post '/api/v1/users/:email/sessions' do
   begin 
-    attributes = JSON.parse(request.body.read)
-    email =  attributes["email"]
-    password =  attributes["password"]
+    attributes = request.body.read
+    puts "attributes[#{attributes}]"
+    jsondata = Yajl::Parser.parse(attributes)
+    puts "jsondata[#{jsondata}]}"
+    email =  jsondata["email"]
+    password =  jsondata["password"]
     puts "#{email}/sessions => attributes[#{attributes}]"
     user = User.authenticate(email, password)
     puts "#{email}/sessions => user[#{user.to_json}]"

@@ -15,8 +15,9 @@ describe "user-service" do
       expect(last_response.status).to eq(400)
     end
    # 3
-    it "should allow accessing known user name [response.status 200]" do
-      get '/api/v1/users/name/lopez'
+    it "should allow accessing known user email [response.status 200]" do
+      email = CGI::escape("99centprocol_lopez@gmail.com")
+      get '/api/v1/users/email/' + email
       expect(last_response.status).to eq(200)
     end
   
@@ -28,28 +29,30 @@ describe "user-service" do
     
    # 9
    it "should allow accessing known user with email" do
-     email= "99centprocol-lopez@gmail.com"
+     email = CGI::escape("99centprocol_lopez@gmail.com")
      request= "/api/v1/users/email/" + email
      get request
      expect(last_response.status).to eq(200)
    end
    
    # 10
-    it "should allow deny accessing user with unknown email" do
-      get '/api/v1/users/email/99centprocol-lopezzzz@gmail.com'
-      expect(last_response.status).to eq(200)
+    it "should deny user with unknown email" do
+      email = CGI::escape("99centprocol-lopezzzz@gmail.com")
+      get '/api/v1/users/email/' + email
+      expect(last_response.status).to eq(404)
     end
   end
   
   describe "{POST requests}" do
     # 5
-    it "should create a new user [response.status 200]" do
+    it "should create a new user with navigation[response.status 200]" do
       post '/api/v1/users', {
-          :name     => "EHGSBYID",
-          :email    => "no spam",
-          :password => "whatever",
+          :name       => "EHGSBYID",
+          :firstname  => "EHGSBYID".reverse,
+          :email      => "no spam",
+          :password   => "whatever",
           :password_confirmation => "whatever",
-          :bio      => "southern bell"}.to_json
+          :bio        => "southern bell"}.to_json
       expect(last_response.status).to eq(200)
       get '/api/v1/users/name/EHGSBYID'
       retrieved_userdata = JSON.parse(last_response.body)

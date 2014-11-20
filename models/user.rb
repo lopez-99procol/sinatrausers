@@ -10,11 +10,15 @@ class User < ActiveRecord::Base
   validates :password,  :presence => true,
                         :confirmation => true,
                         :length => { :within => 6..40}
+                        
+  has_many :navigation, :through => :userprofile
+  
+  accepts_nested_attributes_for :navigation
   
   # Set an own primary_key for testing needs
   self.primary_key = :id
   
-  before_save :encrypt_password 
+  before_save :encrypt_password
   
   def to_json
     super(:except => [:password])
@@ -47,4 +51,5 @@ class User < ActiveRecord::Base
     def secure_hash(string)
       Digest::SHA2.hexdigest(string)
     end
+    
 end

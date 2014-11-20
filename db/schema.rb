@@ -11,17 +11,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141101153628) do
+ActiveRecord::Schema.define(version: 20141119052741) do
+
+  create_table "navigations", force: true do |t|
+    t.string  "label"
+    t.string  "link"
+    t.boolean "free"
+  end
+
+  create_table "userprofiles", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "navigation_id"
+    t.datetime "renewaldate"
+  end
 
   create_table "users", force: true do |t|
     t.string   "name"
+    t.string   "firstname"
     t.string   "email"
     t.string   "bio"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "encrypted_password"
     t.string   "salt"
-    t.string   "firstname"
   end
 
 end
