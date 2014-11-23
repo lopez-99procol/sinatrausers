@@ -115,6 +115,26 @@ post '/api/v1/users' do
   end
 end
 
+# create (post) a user profile
+post '/api/v1/usersprofile' do
+  begin
+    puts "request = #{request.body}"
+    attributes = request.body.read
+    puts "attributes[#{attributes}]"
+    jsondata = Yajl::Parser.parse(attributes)
+    puts "json[#{jsondata}]"
+    user_profile = Userprofile.create(jsondata) if !jsondata.nil? 
+    puts "user_profile[#{user_profile}]"
+    if !user_profile.nil? && user_profile.valid?
+      user_profile.to_json
+    else
+      error 400, "user_profile (jsondata) is(are) nil".to_json
+    end
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
 # update an existing user
 put '/api/v1/users/name/:name' do
   user = User.find_by_name(params[:name])
