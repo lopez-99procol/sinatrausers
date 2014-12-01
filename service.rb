@@ -7,6 +7,7 @@ require 'yaml'
 require 'logger'
 require 'sinatra/activerecord'
 require 'yajl'
+require 'sinatra/reloader' if development?
 
 # set :database_file, "config/database.yml"
 
@@ -82,13 +83,14 @@ get '/api/v1/users/:id/userprofile' do
 end
 
 # get the navigation for a user
-get '/api/v1/users/:navid/navigation' do
+get '/api/v1/users/:user_id/navigation' do
   begin
-    navigation = Navigation.find(params[:navid])
-    if navigation
-      navigation.to_json
+    navigations = User.find(params[:user_id]).navigations
+    
+    if !navigations.nil?
+      navigations.to_json
     else
-      error 404, {:error => "userprofile not found"}.to_json
+      error 404, {:error => "navigation not found"}.to_json
     end
   rescue => e
     error 400, e.message.to_json
@@ -115,20 +117,37 @@ post '/api/v1/users' do
   end
 end
 
-# create (post) a user profile
-post '/api/v1/usersprofile' do
+# create (post) a navigation profile
+post '/api/v1/users/navigation' do
   begin
     puts "request = #{request.body}"
     attributes = request.body.read
-    puts "attributes[#{attributes}]"
+    puts "post navigations=>attributes[#{attributes}]"
     jsondata = Yajl::Parser.parse(attributes)
-    puts "json[#{jsondata}]"
-    user_profile = Userprofile.create(jsondata) if !jsondata.nil? 
-    puts "user_profile[#{user_profile}]"
-    if !user_profile.nil? && user_profile.valid?
-      user_profile.to_json
-    else
-      error 400, "user_profile (jsondata) is(are) nil".to_json
+    puts "post navigations=>json[#{jsondata}]"
+    
+    if !jsondata.nil?
+      user_id = jsondata["user_id"]
+      user = User.find(user_id)
+      puts "user[#{user}]"
+      navigations = jsondata["navigation_id"]
+      puts "navigations[#{navigations}]"
+      navigations.each do |n|
+        puts "n => #{n}"
+        nav = Navigation.find(n)
+        puts "nav.id=>#{nav.id}"
+        if !user.navigations.find(nav.id)
+          user.navigations << nav
+          user.save
+        end
+      end
+#      if !user_profile.nil? && user_profile.valid?
+#        user_profile.to_json
+#      else
+#        error 400, "user_profile is nil".to_json
+#      end
+#    else
+#        error 400, "jsondata are nil".to_json
     end
   rescue => e
     error 400, e.message.to_json

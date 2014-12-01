@@ -2,7 +2,7 @@ require 'digest'
 require 'sinatra/activerecord'
 
 class User < ActiveRecord::Base
-  attr_accessor :password
+  attr_accessor :password, :userprofile
   #attr_accessible :name, :email, :password, :passwort_confirmation
   validates_uniqueness_of :email
   
@@ -10,10 +10,11 @@ class User < ActiveRecord::Base
   validates :password,  :presence => true,
                         :confirmation => true,
                         :length => { :within => 6..40}
-                        
-  has_many :navigation, :through => :userprofile
+                    
+  has_many :userprofile                      
+  has_many :navigations, :through => :userprofile
   
-  accepts_nested_attributes_for :navigation
+  accepts_nested_attributes_for :navigations
   
   # Set an own primary_key for testing needs
   self.primary_key = :id
