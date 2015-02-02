@@ -21,6 +21,8 @@ else
   set :database, {adapter: "sqlite3", database: "db/development.sqlite3"}
 end
 
+dFlag = true
+
 # setting up a logger. levels -> DEBUG < INFO < WARN < ERROR < FATAL < UNKNOWN
 log = Logger.new(STDOUT)
 log.level = Logger::DEBUG 
@@ -119,27 +121,29 @@ end
 
 # create (post) a navigation profile
 post '/api/v1/users/navigation' do
+  
   begin
-    puts "request = #{request.body}"
+    debug = "POST users/navigation->"
+    puts debug+"request.body(#{request.body})" if dFlag
     attributes = request.body.read
-    puts "post navigations=>attributes[#{attributes}]"
+    puts debug+"attributes(#{attributes})" if dFlag
     jsondata = Yajl::Parser.parse(attributes)
-    puts "post navigations=>json[#{jsondata}]"
+    puts debug+"jsondata(#{jsondata})" if dFlag
     
     if !jsondata.nil?
       user_id = jsondata["user_id"]
       user = User.find(user_id)
-      puts "user[#{user}]"
+      puts debug+"user(#{user})" if dFlag
       navigations = jsondata["navigation_id"]
-      puts "navigations[#{navigations}]"
+      puts debug+"navigations(#{navigations})" if dFlag
       navigations.each do |n|
-        puts "n => #{n}"
+        puts "n => #{n}" if dFlag
         nav = Navigation.find(n)
-        puts "nav.id=>#{nav.id}"
-        if !user.navigations.find(nav.id)
+        puts debug+"nav.id(#{nav.id})" if dFlag
+       # if user.navigations.nil?
           user.navigations << nav
           user.save
-        end
+      #  end
       end
 #      if !user_profile.nil? && user_profile.valid?
 #        user_profile.to_json
