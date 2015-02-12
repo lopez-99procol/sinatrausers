@@ -178,13 +178,23 @@ end
 
 # update an existing user
 put '/api/v1/users/:id' do
+  dMsg = "service.update_user"
   user = User.find(params[:id])
+  puts "service.update_user:user(#{user.to_json})"
+  attributes = request.body.read
+  puts "attributes(#{attributes})"
   if user
     begin
-      if user.update_attributes(JSON.parse(request.body.read))
-        user.to_json
+      hash = JSON.parse(attributes)
+      puts "#{dMsg}:hash(#{hash})"
+      status = user.update_attributes(hash)
+      puts "#{dMsg}:status(#{status})"
+      if status
+        jason = user.to_json
+        puts "jason(#{jason})"
+        jason
       else
-        error 400, user.message.to_json
+        error 400, "could not update user! status(#{status})"
       end
     rescue => e
       error 400, e.message.to_json
@@ -228,9 +238,9 @@ end
 post '/api/v1/users/:email/sessions' do
   begin 
     attributes = request.body.read
-    puts "attributes[#{attributes}]"
+    puts "sessions:attributes(#{attributes})"
     jsondata = Yajl::Parser.parse(attributes)
-    puts "jsondata[#{jsondata}]}"
+    puts "sessions:jsondata(#{jsondata})}"
     email =  jsondata["email"]
     password =  jsondata["password"]
     puts "#{email}/sessions => attributes[#{attributes}]"
