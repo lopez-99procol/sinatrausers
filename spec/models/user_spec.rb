@@ -1,4 +1,3 @@
-
 require_relative '../spec_helper'
 
 describe User do
@@ -7,8 +6,8 @@ describe User do
     :name => "Warnke",
     :firstname => "Felix",
     :email => "99centprocol_felix@gmail.com",
-    :password => "99C3ntPr0C01",
-    :password_confirmation => "99C3ntPr0C01"
+    :password => "Password1",
+    :password_confirmation => "Password1"
     }
     
     @nav = {

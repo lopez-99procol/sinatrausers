@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
                     
   has_many :userprofile                      
   has_many :navigations, :through => :userprofile
+  has_many :microposts, :dependent => :destroy
   
   accepts_nested_attributes_for :navigations
   

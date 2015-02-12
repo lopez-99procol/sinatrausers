@@ -1,5 +1,5 @@
 # sinatra users webservice
-The sinatra users websevice provides users related services.
+The sinatra users webservice provides users related services.
 
 ## set up
 Publish new code

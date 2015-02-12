@@ -35,5 +35,11 @@ ActiveRecord::Schema.define(version: 20141119052741) do
     t.string   "encrypted_password"
     t.string   "salt"
   end
+  
+  create_table "microposts" do |t|
+    t.string "content"
+    t.integer "user_id"
+    t.timestamps
+  end
 
 end
