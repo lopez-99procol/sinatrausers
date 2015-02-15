@@ -3,6 +3,7 @@ require 'sinatra'
 require_relative 'models/user.rb'
 require_relative 'models/navigation.rb'
 require_relative 'models/userprofile.rb'
+require_relative 'models/micropost.rb'
 require 'yaml'
 require 'logger'
 require 'sinatra/activerecord'
@@ -93,6 +94,21 @@ get '/api/v1/users/:user_id/navigation' do
       navigations.to_json
     else
       error 404, {:error => "navigation not found"}.to_json
+    end
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
+# get the microposts for a user
+get '/api/v1/users/:user_id/microposts' do
+  begin
+    microposts = User.find(params[:user_id]).microposts
+    
+    if !microposts.nil?
+      microposts.to_json
+    else
+      error 404, {:error => "microposts not found"}.to_json
     end
   rescue => e
     error 400, e.message.to_json

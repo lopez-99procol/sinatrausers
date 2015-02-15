@@ -8,17 +8,29 @@ describe "micropost" do
   before(:each) do
     @user = User.last
     @mp = @user.microposts
-    @attr = { :content => "value for content" }
+    @mpattr = { :content => "value for content" }
   end
 
   it "should create a new instance given valid attributes" do
-    @user.microposts.create!(@attr)
+    @user.microposts.create!(@mpattr)
   end
   
 
   describe "user associations" do
+    before(:all) do
+      @uattr = {
+        :firstname => "#{('a'..'z').to_a.shuffle.join}",
+        :name => "#{('a'..'z').to_a.shuffle.join}",
+        :email => "#{('a'..'z').to_a.shuffle.join}@gmail.com",
+        :password => "Password1",
+        :password_confirmation => "Password1"
+      }
+      @user = User.create(@uattr)
+    end
+    
     before(:each) do
-      @micropost = @user.microposts.create(@attr)
+      @micropost = @user.microposts.create(@mpattr)
+       
     end
     
     it "should have a user attribute" do
@@ -41,4 +53,16 @@ describe "micropost" do
     end
     
   end
+
+  describe "validations" do
+    
+    it "should require a user id" do
+      expect(Micropost.new(@mpattr)).not_to eq(true)
+    end
+    
+    it "should require non blank content" do
+      expect(@user.microposts.build(:content => " ")).not_to eq(true)
+    end    
+  end
+
 end
