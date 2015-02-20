@@ -115,6 +115,21 @@ get '/api/v1/users/:user_id/microposts' do
   end
 end
 
+# get the microposts for a user
+get '/api/v1/microposts/:id' do
+  begin
+    micropost = Micropost.find(params[:id])
+    
+    if !micropost.nil?
+      micropost.to_json
+    else
+      error 404, {:error => "micropost not found"}.to_json
+    end
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
 # create (post) a new user
 post '/api/v1/users' do
   begin
