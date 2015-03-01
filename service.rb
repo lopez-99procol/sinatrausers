@@ -115,7 +115,7 @@ get '/api/v1/users/:user_id/microposts' do
   end
 end
 
-# get the microposts for a user
+# get a specific microposts
 get '/api/v1/microposts/:id' do
   begin
     micropost = Micropost.find(params[:id])
@@ -129,6 +129,35 @@ get '/api/v1/microposts/:id' do
     error 400, e.message.to_json
   end
 end
+
+# create a new micropost
+post '/api/v1/users/:user_id/microposts' do
+  begin
+    puts "request = #{request.body}"
+    attributes = request.body.read
+    puts "attributes[#{attributes}]"
+    jsondata = Yajl::Parser.parse(attributes)
+    puts "jsondata[#{jsondata}]"
+    user_id = params[:user_id]
+    user = User.find(user_id)
+    puts "user[#{user}]"
+    if !user.nil?
+      micropost = Micropost.new()
+      micropost.content = jsondata["content"]
+      micropost.user_id = user_id
+      puts "service:create_micropost(micropost.content(#{micropost.content}))"
+      user.microposts << micropost
+      micropost.save
+      user.save
+    else
+      error 400, "user (jsondata) is(are) nil".to_json
+    end
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
+
 
 # create (post) a new user
 post '/api/v1/users' do
